@@ -7,6 +7,7 @@ Created on 2014-3-23
     3. pywin32
 @author: khz
 '''
+import os
 
 def main():
     pass
@@ -14,6 +15,8 @@ def main():
 if __name__ == "__main__":
     print("------------------   begin   ------------------")
     
+    print( u"【当前工作目录是：】\t".encode("gb2312") + os.getcwd() )
+    print( u"【当前进程ID是：】\t".encode("gb2312") + str(os.getpid()) )
     main()
     
     print("------------------    end    ------------------")
