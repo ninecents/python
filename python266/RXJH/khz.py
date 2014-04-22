@@ -23,8 +23,10 @@ def main():
     #sys.path.append(r"E:\__STUDY__\__SVN__\github\ninecents\python\trunk\python266\RXJH")
     #print sys.path
     reload(injectDll)
+    injectDll.main()
+    #injectDll.test()
     #khzLog( ','.join(sys.modules) )
-	#injectDll.main()
+    #injectDll.main()
     #win32api.MessageBox(0, "khz")
     pass
 
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     args.reverse()
     print ",".join(args)
-	#sys.path.append(r'E:\__STUDY__\__SVN__\svn999\study\python266')
+    #sys.path.append(r'E:\__STUDY__\__SVN__\svn999\study\python266')
     main()
     
     khzLog("------------------    end    ------------------")

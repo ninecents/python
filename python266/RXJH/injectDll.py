@@ -11,17 +11,22 @@ import ctypes
 import time
 
 def khzLog(strLog):
+    #return
     atm = time.localtime()
-    strTime = "%02d-%02d-%02d" % (atm.tm_year, atm.tm_mon, atm.tm_mday)
-    strOut = "[khz]\t" + strTime + '\t' + __name__ + '\t' + strLog
-    print strOut
-    ctypes.windll.Kernel32.OutputDebugStringA( strOut )
+    strTime = u"%02d-%02d-%02d" % (atm.tm_year, atm.tm_mon, atm.tm_mday)
+    strOut = u"[khz]\t" + strTime + u'\t' + unicode(__name__) + u'\t'
+    strOut += strLog
+    print(strOut.encode("gb2312"))
+    ctypes.windll.Kernel32.OutputDebugStringW( strOut )
+    '''
+    ctypes.windll.Kernel32.OutputDebugStringW( strLog )
+    '''
     pass
 
 class CharacterState():
     pass
 
-def getCharacterState():
+def getCharacterState(): 
     '''
     血值 基址         0x02F7C020
        +4: 魔力值
@@ -42,10 +47,10 @@ def getCharacterState():
 
     '''
     addrBase = 0x02F7C020
+    buf = ctypes.create_string_buffer("123412341234123412345", 40 + 4)
+    addrBase = id(buf)
     '''
     # 方法一：ctypes winapi 访问自己进程空间的内存
-    buf = ctypes.create_string_buffer("123412341234123412345", 20 + 4)
-    addrBase = id(buf)
     print type(id(buf)), hex(id(buf))
     # WINBASEAPI BOOL WINAPI ReadProcessMemory( __in HANDLE hProcess, __in LPCVOID lpBaseAddress, __out_bcount_part(nSize, *lpNumberOfBytesRead) LPVOID lpBuffer, __in SIZE_T nSize, __out_opt SIZE_T * lpNumberOfBytesRead )
     ctypes.windll.Kernel32.ReadProcessMemory( None, addrBase, buf, 20, None )
@@ -56,12 +61,19 @@ def getCharacterState():
     # 方法二：ctype string_at 访问自己进程空间的内存
     strStat = ctypes.string_at(addrBase, 0x40)
     lstStat = struct.unpack("II", strStat[:8])
-    khzLog("血值：%d, 魔力值: %d" % (lstStat[0], lstStat[1]))
+    strLog = u"血值：%d, 魔力值: %d" % (lstStat[0], lstStat[1])
+
+    khzLog(strLog)
+
+def test():
+    khzLog(u"------------------    test    ------------------")
 
 def main():
-    khzLog("------------------   begin   ------------------")
+    print("[khz]    2014-04-23    __main__    血值：1, 魔力值: 40587536")
+    khzLog(u"------------------   begin   ------------------")
     getCharacterState()
-    khzLog("------------------    end    ------------------")
+    #test()
+    khzLog(u"------------------    end    ------------------")
     pass
 
 if __name__ == "__main__":
@@ -69,9 +81,11 @@ if __name__ == "__main__":
    
     print( u"【当前工作目录是：】\t" + os.getcwd() )
     print( u"【当前进程ID是：】\t" + str(os.getpid()) )
-    print( "\n" )
+    print( u"\n" )
     main()
    
     print("------------------    end    ------------------")
 else:
-    main()
+    pass
+    #test()
+    #main()
