@@ -28,6 +28,8 @@ class CPacketHookBase(object):
     def __init__(self, strGameExeName):
         self.dbg    = pydbg()
         dbg         = self.dbg
+        # 设置断点容器
+        self.hooks       = utils.hook_container()
 
         # 获得进程ID
         #nPID = khztools.getProcID(self.dbg, strGameExeName)             #"FightersClub.exe"
@@ -49,6 +51,24 @@ class CPacketHookBase(object):
         self.dbg.h_thread
         pass
     
+
+    #查看是否应该退出程序了
+    @staticmethod
+    def isActiveDbg():
+        strPath = r"E:\__STUDY__\__SVN__\github\ninecents\python\trunk\python266\__cfg__" '\\'
+        try:
+            with open(strPath + "isActiveDbg", "r") as aFile:
+                return aFile.readline() == "True"
+        except:
+            return False
+        
+        return False        #读取失败则返回False，退出调试
+    
+    def checkActiveDbg(self):
+        self.dbg.debugger_active = CPacketHookBase.isActiveDbg()
+        
+        return self.dbg.debugger_active
+
     @staticmethod
     def fnAPI_send( dbg, args ):
         '''
@@ -115,9 +135,7 @@ class CPacketHookBase(object):
         return DBG_CONTINUE
         pass
     
-    def run(self):
-        # 设置断点
-        self.hooks       = utils.hook_container()
+    def SetDefaultHook(self):
         '''WSASend的API断点'''                     # (u"fnAPI_WSASend_address addr is 0x%08X" % fnAPI_WSASend_address)
         fnAPI_address = self.dbg.func_resolve_debuggee("Ws2_32", "WSASend")
         self.hooks.add( self.dbg, fnAPI_address, 7, CPacketHookBase.fnAPI_WSASend, None)
@@ -126,6 +144,7 @@ class CPacketHookBase(object):
         fnAPI_address = self.dbg.func_resolve_debuggee("Ws2_32", "send")
         self.hooks.add( self.dbg, fnAPI_address, 4, CPacketHookBase.fnAPI_send, None)
 
+    def run(self):
         # 循环执行调试过程
         self.dbg.run()
         pass
@@ -134,6 +153,7 @@ class CPacketHookBase(object):
 
 def main():
     aHookTest = CPacketHookBase("Evernote.exe")
+    aHookTest.SetDefaultHook()
     aHookTest.run()
     pass
 
